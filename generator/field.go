@@ -89,7 +89,7 @@ func processSubMessage(w io.Writer,
 		return nil, errors.New("input field name is nil")
 	}
 
-	tpl := "%sTo%s"
+	tpl := "TEST%sTo%s"
 	pb := "Pb"
 
 	p2g := ""

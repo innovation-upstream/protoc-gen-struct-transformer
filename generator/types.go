@@ -19,5 +19,4 @@ var types = map[descriptor.FieldDescriptorProto_Type]typeRel{
 	descriptor.FieldDescriptorProto_TYPE_DOUBLE: typeRel{pbType: "", goType: "float64"},
 	descriptor.FieldDescriptorProto_TYPE_BOOL:   typeRel{pbType: "", goType: "bool"},
 	descriptor.FieldDescriptorProto_TYPE_STRING: typeRel{pbType: "", goType: "string"},
-	descriptor.FieldDescriptorProto_TYPE_ENUM:   typeRel{pbType: "", goType: "uint32"},
 }
