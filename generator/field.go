@@ -89,7 +89,7 @@ func processSubMessage(w io.Writer,
 		return nil, errors.New("input field name is nil")
 	}
 
-	tpl := "TEST%sTo%s"
+	tpl := "%sTo%s"
 	pb := "Pb"
 
 	p2g := ""
@@ -195,8 +195,8 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 			p = t.goType
 		}
 
-		f.ProtoToGoType = fmt.Sprintf("%sTo%s", strcase.ToCamel(p), sf.Type)
-		f.GoToProtoType = fmt.Sprintf("%sTo%s", sf.Type, strcase.ToCamel(p))
+		f.ProtoToGoType = fmt.Sprintf("TEST%sTo%s", strcase.ToCamel(p), sf.Type)
+		f.GoToProtoType = fmt.Sprintf("TEST%sTo%s", sf.Type, strcase.ToCamel(p))
 		f.UsePackage = true
 
 	case sft != tpb:
@@ -290,7 +290,7 @@ func processField(
 // "SomeId".
 // TODO(ekhabarov): Add cli parameter for such mapping.
 func abbreviationUpper(name string) string {
-	abbreviation := []string{"Id", "Sku", "Url"}
+	abbreviation := []string{"Id", "Sku", "Url", "Uid"}
 
 	for _, a := range abbreviation {
 		if name == a {
