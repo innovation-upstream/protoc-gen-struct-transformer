@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/bold-commerce/protoc-gen-struct-transformer/options"
-	"github.com/bold-commerce/protoc-gen-struct-transformer/source"
+	"github.com/ZacxDev/protoc-gen-struct-transformer/options"
+	"github.com/ZacxDev/protoc-gen-struct-transformer/source"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	plugin "github.com/gogo/protobuf/protoc-gen-gogo/plugin"

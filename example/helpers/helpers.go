@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/bold-commerce/protoc-gen-struct-transformer/example/nulls"
+	"github.com/ZacxDev/protoc-gen-struct-transformer/example/nulls"
 )
 
 func TimeToNullsTime(t time.Time) nulls.Time {
