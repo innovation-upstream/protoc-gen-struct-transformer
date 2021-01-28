@@ -290,7 +290,7 @@ func processField(
 // "SomeId".
 // TODO(ekhabarov): Add cli parameter for such mapping.
 func abbreviationUpper(name string) string {
-	abbreviation := []string{"Id", "Sku", "Url", "Uid"}
+	abbreviation := []string{"Id", "Sku", "Url"}
 
 	for _, a := range abbreviation {
 		if name == a {
