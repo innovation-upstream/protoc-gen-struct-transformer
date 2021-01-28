@@ -37,8 +37,8 @@ func wktgoogleProtobufTimestamp(pname, gname string, gf source.FieldInfo, pnulla
 			g += "Ptr"
 		}
 
-		p2g = fmt.Sprintf("%sTo%s", p, g)
-		g2p = fmt.Sprintf("%sTo%s", g, p)
+		p2g = fmt.Sprintf("%sTESTTo%s", p, g)
+		g2p = fmt.Sprintf("%sTESTTo%s", g, p)
 	}
 
 	return &Field{
@@ -59,8 +59,8 @@ func wktgoogleProtobufString(pname, gname, ftype string) *Field {
 	return &Field{
 		Name:          gname,
 		ProtoName:     pname,
-		ProtoToGoType: fmt.Sprintf("%sTo%s", p, g),
-		GoToProtoType: fmt.Sprintf("%sTo%s", g, p),
+		ProtoToGoType: fmt.Sprintf("%sTESTTo%s", p, g),
+		GoToProtoType: fmt.Sprintf("%sTESTTo%s", g, p),
 		UsePackage:    true,
 	}
 }
@@ -89,7 +89,7 @@ func processSubMessage(w io.Writer,
 		return nil, errors.New("input field name is nil")
 	}
 
-	tpl := "%sTo%s"
+	tpl := "%sTESTTo%s"
 	pb := "Pb"
 
 	p2g := ""
@@ -195,8 +195,8 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 			p = t.goType
 		}
 
-		f.ProtoToGoType = fmt.Sprintf("%sTo%s", strcase.ToCamel(p), sf.Type)
-		f.GoToProtoType = fmt.Sprintf("%sTo%s", sf.Type, strcase.ToCamel(p))
+		f.ProtoToGoType = fmt.Sprintf("%sTESTTo%s", strcase.ToCamel(p), sf.Type)
+		f.GoToProtoType = fmt.Sprintf("%sTESTTo%s", sf.Type, strcase.ToCamel(p))
 		f.UsePackage = true
 
 	case sft != tpb:
@@ -210,8 +210,8 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 		f.UsePackage = t.usePackage
 	}
 
-	f.ProtoToGoType = fmt.Sprintf("%sTo%s", strcase.ToCamel("test"), sf.Type)
-	f.GoToProtoType = fmt.Sprintf("%sTo%s", sf.Type, strcase.ToCamel("test"))
+	f.ProtoToGoType = fmt.Sprintf("%sTESTTo%s", strcase.ToCamel("test"), sf.Type)
+	f.GoToProtoType = fmt.Sprintf("%sTESTTo%s", sf.Type, strcase.ToCamel("test"))
 
 	return f, nil
 }
