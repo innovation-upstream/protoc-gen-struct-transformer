@@ -195,8 +195,8 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 			p = t.goType
 		}
 
-		f.ProtoToGoType = fmt.Sprintf("TEST%sTo%s", strcase.ToCamel(p), sf.Type)
-		f.GoToProtoType = fmt.Sprintf("TEST%sTo%s", sf.Type, strcase.ToCamel(p))
+		f.ProtoToGoType = fmt.Sprintf("%sTo%s", strcase.ToCamel(p), sf.Type)
+		f.GoToProtoType = fmt.Sprintf("%sTo%s", sf.Type, strcase.ToCamel(p))
 		f.UsePackage = true
 
 	case sft != tpb:
@@ -209,6 +209,9 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 		f.GoToProtoType = t.goType
 		f.UsePackage = t.usePackage
 	}
+
+	f.ProtoToGoType = fmt.Sprintf("%sTo%s", strcase.ToCamel("test"), sf.Type)
+	f.GoToProtoType = fmt.Sprintf("%sTo%s", sf.Type, strcase.ToCamel("test"))
 
 	return f, nil
 }
