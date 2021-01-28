@@ -3,7 +3,7 @@ package generator
 import (
 	"testing"
 
-	"github.com/bold-commerce/protoc-gen-struct-transformer/source"
+	"github.com/ZacxDev/protoc-gen-struct-transformer/source"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

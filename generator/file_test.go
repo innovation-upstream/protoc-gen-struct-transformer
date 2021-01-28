@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/bold-commerce/protoc-gen-struct-transformer/options"
+	"github.com/ZacxDev/protoc-gen-struct-transformer/options"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	plugin "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
