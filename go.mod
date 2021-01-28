@@ -1,6 +1,6 @@
 module github.com/ZacxDev/protoc-gen-struct-transformer
 
-go 1.15
+go 1.13
 
 require (
 	github.com/gogo/protobuf v1.3.1
