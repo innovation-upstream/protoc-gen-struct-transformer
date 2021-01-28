@@ -1,3 +1,5 @@
+github.com/bold-commerce/protoc-gen-struct-transformer v1.0.7 h1:Qjc6aKkiGyLeyvgho3AaIV5QvJLSxIw817yzuckG2wA=
+github.com/bold-commerce/protoc-gen-struct-transformer v1.0.7/go.mod h1:AImauQRl6b1gF2KIpHz2x8gXpgw5rf2phADiY+IaNgM=
 github.com/fsnotify/fsnotify v1.4.7 h1:IXs+QLmnXW2CcXuY+8Mzv/fWEsPGWxqefPtCP5CnV9I=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/gogo/protobuf v1.3.1 h1:DqDEcV5aeaTmdFBePNpYsp3FlcVH/2ISVVM9Qf8PSls=
