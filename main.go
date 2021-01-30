@@ -94,7 +94,7 @@ func main() {
 		}
 
 		resp.File = append(resp.File, &plugin.CodeGeneratorResponse_File{
-			Name:    proto.String(optPath),
+			Name:    proto.String(optPath + "__test_"),
 			Content: proto.String(content),
 		})
 	}
