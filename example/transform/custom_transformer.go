@@ -3,7 +3,7 @@
 
 package transform
 
-import "github.com/ZacxDev/protoc-gen-struct-transformer/example"
+import "github.com/innovation-upstream/protoc-gen-struct-transformer/example"
 
 // PbCustomTypeToStringPtrVal is an example of the custom transformer from Pb to go
 func PbCustomTypeToStringPtrVal(src *example.CustomType, opts ...TransformParam) string {

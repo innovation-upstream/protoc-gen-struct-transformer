@@ -3,8 +3,8 @@ package generator
 import (
 	"errors"
 
-	"github.com/ZacxDev/protoc-gen-struct-transformer/options"
-	"github.com/ZacxDev/protoc-gen-struct-transformer/source"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/options"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/source"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	. "github.com/onsi/ginkgo"

@@ -9,7 +9,7 @@
 // own structures. In this case you have to convert generated structures into
 // structures use in business logic and vice versa.
 //
-// See documentation and usage examples on https://github.com/ZacxDev/protoc-gen-struct-transformer/blob/master/README.md
+// See documentation and usage examples on https://github.com/innovation-upstream/protoc-gen-struct-transformer/blob/master/README.md
 package main
 
 import (
@@ -20,7 +20,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ZacxDev/protoc-gen-struct-transformer/generator"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/generator"
 	plugin "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/tools/imports"

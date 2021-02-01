@@ -7,9 +7,9 @@ package transform
 import (
 	"strconv"
 
-	"github.com/ZacxDev/protoc-gen-struct-transformer/example"
-	"github.com/ZacxDev/protoc-gen-struct-transformer/example/helpers"
-	"github.com/ZacxDev/protoc-gen-struct-transformer/example/model"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/example"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/example/helpers"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/example/model"
 )
 
 // Oneof: "the_decl"

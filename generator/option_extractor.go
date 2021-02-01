@@ -3,7 +3,7 @@ package generator
 import (
 	"fmt"
 
-	"github.com/ZacxDev/protoc-gen-struct-transformer/options"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/options"
 	"github.com/gogo/protobuf/gogoproto"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"

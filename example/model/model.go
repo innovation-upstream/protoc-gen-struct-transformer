@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/ZacxDev/protoc-gen-struct-transformer/example/nulls"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/example/nulls"
 )
 
 type (

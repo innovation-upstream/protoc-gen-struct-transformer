@@ -5,7 +5,7 @@ package example
 
 import (
 	fmt "fmt"
-	_ "github.com/ZacxDev/protoc-gen-struct-transformer/options"
+	_ "github.com/innovation-upstream/protoc-gen-struct-transformer/options"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"

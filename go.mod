@@ -1,4 +1,4 @@
-module github.com/ZacxDev/protoc-gen-struct-transformer
+module github.com/innovation-upstream/protoc-gen-struct-transformer
 
 go 1.13
 
