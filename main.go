@@ -37,6 +37,7 @@ var (
 
 func main() {
 	flag.Parse()
+	must(fmt.Errorf("test error"))
 	if *versionFlag {
 		fmt.Println(generator.Version())
 		os.Exit(0)
