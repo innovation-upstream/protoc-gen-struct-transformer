@@ -182,7 +182,7 @@ func ProcessFile(f *descriptor.FileDescriptorProto, packageName, helperPackageNa
 		pn = *packageName
 	}
 
-	absPath := strings.Replace(filepath.Join(dir, pn, filename, "__", *f.Name), ".proto", "_transformer.go", -1)
+	absPath := strings.Replace(filepath.Join(dir, pn, filename), ".proto", "_transformer.go", -1)
 
 	return absPath, w.String(), nil
 }
