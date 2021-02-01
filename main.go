@@ -20,9 +20,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/innovation-upstream/protoc-gen-struct-transformer/generator"
 	plugin "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 	"github.com/golang/protobuf/proto"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/generator"
 	"golang.org/x/tools/imports"
 )
 
@@ -37,7 +37,6 @@ var (
 
 func main() {
 	flag.Parse()
-	must(fmt.Errorf("test error"))
 	if *versionFlag {
 		fmt.Println(generator.Version())
 		os.Exit(0)
