@@ -6,10 +6,10 @@ import (
 	"io"
 	"strings"
 
-	"github.com/innovation-upstream/protoc-gen-struct-transformer/options"
-	"github.com/innovation-upstream/protoc-gen-struct-transformer/source"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"github.com/iancoleman/strcase"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/options"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/source"
 	pkgerrors "github.com/pkg/errors"
 )
 
@@ -195,8 +195,8 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 			p = t.goType
 		}
 
-		f.ProtoToGoType = fmt.Sprintf("%sTo%s", strcase.ToCamel(p), sf.Type)
-		f.GoToProtoType = fmt.Sprintf("%sTo%s", sf.Type, strcase.ToCamel(p))
+		f.ProtoToGoType = fmt.Sprintf("HI%sTo%s", strcase.ToCamel(p), sf.Type)
+		f.GoToProtoType = fmt.Sprintf("HI%sTo%s", sf.Type, strcase.ToCamel(p))
 		f.UsePackage = true
 
 	case sft != tpb:
