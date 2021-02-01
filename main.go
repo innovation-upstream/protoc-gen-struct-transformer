@@ -76,7 +76,7 @@ func main() {
 		}
 
 		resp.File = append(resp.File, &plugin.CodeGeneratorResponse_File{
-			Name:    proto.String(filename + "__test_"),
+			Name:    proto.String(filename),
 			Content: proto.String(content),
 		})
 

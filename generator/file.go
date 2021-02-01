@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/innovation-upstream/protoc-gen-struct-transformer/options"
-	"github.com/innovation-upstream/protoc-gen-struct-transformer/source"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	plugin "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/options"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/source"
 )
 
 var (
@@ -181,7 +181,7 @@ func ProcessFile(f *descriptor.FileDescriptorProto, packageName, helperPackageNa
 	if usePackageInPath {
 		pn = *packageName
 	}
-	fmt.Println(*f.Name)
+
 	absPath := strings.Replace(filepath.Join(dir, pn, filename, "__", *f.Name), ".proto", "_transformer.go", -1)
 
 	return absPath, w.String(), nil
