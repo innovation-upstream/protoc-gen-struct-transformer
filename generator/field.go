@@ -191,12 +191,15 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 
 	case sft != tgo:
 		p := t.pbType
+		if *ftype == descriptor.FieldDescriptorProto_TYPE_ENUM {
+			p = f.ProtoType
+		}
 		if p == "" {
 			p = t.goType
 		}
 
-		f.ProtoToGoType = fmt.Sprintf("HI%sTo%s", strcase.ToCamel(p), sf.Type)
-		f.GoToProtoType = fmt.Sprintf("HI%sTo%s", sf.Type, strcase.ToCamel(p))
+		f.ProtoToGoType = fmt.Sprintf("%sTo%s", strcase.ToCamel(p), sf.Type)
+		f.GoToProtoType = fmt.Sprintf("%sTo%s", sf.Type, strcase.ToCamel(p))
 		f.UsePackage = true
 
 	case sft != tpb:
