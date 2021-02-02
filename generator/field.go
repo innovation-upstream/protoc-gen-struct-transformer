@@ -165,7 +165,7 @@ func processSubMessage(w io.Writer,
 
 // processSimpleField processes fields of basic types such as int, string and
 // so on.
-func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.FieldDescriptorProto_Type, sf source.FieldInfo) (*Field, error) {
+func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.FieldDescriptorProto_Type, sf source.FieldInfo, fdp *descriptor.FieldDescriptorProto) (*Field, error) {
 
 	sf.Type = strcase.ToCamel(strings.Replace(sf.Type, ".", "", -1)) // pkg.Type => PkgType
 	t := types[*ftype]
@@ -192,7 +192,7 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 	case sft != tgo:
 		p := t.pbType
 		if *ftype == descriptor.FieldDescriptorProto_TYPE_ENUM {
-			p = sf.Type + "Enum"
+			p = *fdp.TypeName
 		}
 		if p == "" {
 			p = t.goType
@@ -283,7 +283,7 @@ func processField(
 		return processSubMessage(w, fdp, pname, gname, t, mo, goStructFields, customTransformer)
 	}
 
-	return processSimpleField(w, pname, gname, fdp.Type, gf)
+	return processSimpleField(w, pname, gname, fdp.Type, gf, fdp)
 }
 
 // abbreviationUpper checks a incoming string for equality and suffixes, if it
