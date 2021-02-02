@@ -192,7 +192,7 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 	case sft != tgo:
 		p := t.pbType
 		if *ftype == descriptor.FieldDescriptorProto_TYPE_ENUM {
-			p = f.ProtoType + "Enum"
+			p = sf.Type + "Enum"
 		}
 		if p == "" {
 			p = t.goType
