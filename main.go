@@ -33,6 +33,7 @@ var (
 	goimports         = flag.Bool("goimports", false, "Perform goimports on generated file.")
 	debug             = flag.Bool("debug", false, "Add debug information to generated file.")
 	usePackageInPath  = flag.Bool("use-package-in-path", true, "If true, package parameter will be used in path for output file.")
+	paths             = flag.String("paths", "", "How to generate output filenames.")
 )
 
 func main() {
@@ -59,7 +60,7 @@ func main() {
 
 	for _, f := range gogoreq.ProtoFile {
 
-		filename, content, err := generator.ProcessFile(f, packageName, helperPackageName, messages, *debug, *usePackageInPath)
+		filename, content, err := generator.ProcessFile(f, packageName, helperPackageName, messages, *debug, *usePackageInPath, *paths)
 		if err != nil {
 			if err != generator.ErrFileSkipped {
 				must(err)
@@ -81,22 +82,22 @@ func main() {
 		})
 
 		optPath = filename
-	}
 
-	if optPath != "" {
-		optPath = filepath.Dir(optPath) + "/options.go"
+		if optPath != "" {
+			optPath = filepath.Dir(optPath) + "/options.go"
 
-		content, err := runGoimports(optPath, generator.OptHelpers(*packageName))
-		if err != nil {
-			if err != generator.ErrFileSkipped {
-				must(err)
+			content, err := runGoimports(optPath, generator.OptHelpers(*packageName))
+			if err != nil {
+				if err != generator.ErrFileSkipped {
+					must(err)
+				}
 			}
-		}
 
-		resp.File = append(resp.File, &plugin.CodeGeneratorResponse_File{
-			Name:    proto.String(optPath),
-			Content: proto.String(content),
-		})
+			resp.File = append(resp.File, &plugin.CodeGeneratorResponse_File{
+				Name:    proto.String(optPath),
+				Content: proto.String(content),
+			})
+		}
 	}
 
 	// Send back the results.
