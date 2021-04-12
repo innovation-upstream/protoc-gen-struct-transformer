@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -22,6 +23,13 @@ var (
 	// version information. See Makefile for details.
 	version   = "<dev>"
 	buildTime = "<build_time>"
+)
+
+type PathType int
+
+const (
+	pathTypeImport         PathType = 0
+	pathTypeSourceRelative PathType = 0
 )
 
 // WriteStringer exposes two methods:
@@ -114,7 +122,7 @@ func modelsPath(m proto.Message) (string, error) {
 }
 
 // ProcessFile processes .proto file and returns content as a string.
-func ProcessFile(f *descriptor.FileDescriptorProto, packageName, helperPackageName *string, messages MessageOptionList, debug, usePackageInPath bool) (string, string, error) {
+func ProcessFile(f *descriptor.FileDescriptorProto, packageName, helperPackageName *string, messages MessageOptionList, debug, usePackageInPath bool, paths string) (string, string, error) {
 	path, err := modelsPath(f.Options)
 	if err != nil {
 		return "", "", err
@@ -176,15 +184,49 @@ func ProcessFile(f *descriptor.FileDescriptorProto, packageName, helperPackageNa
 		return "", "", err
 	}
 
-	dir, filename := filepath.Split(*f.Name)
-	pn := ""
+	var pn string
 	if usePackageInPath {
 		pn = *packageName
 	}
 
-	absPath := strings.Replace(filepath.Join(dir, pn, filename), ".proto", "_transformer.go", -1)
+	var absPath string
+	var pathType PathType
+	switch paths {
+	case "import":
+		pathType = pathTypeImport
+	case "source_relative":
+		pathType = pathTypeSourceRelative
+	default:
+		return absPath, w.String(), fmt.Errorf(`Unknown path type %q: want "import" or "source_relative".`, pathType)
+	}
+
+	absPath = goFileName(f, pathType, pn)
+
+	w.Write([]byte("here:"))
+	w.Write([]byte(fmt.Sprintf("%+v", f.Options)))
 
 	return absPath, w.String(), nil
+}
+
+func goFileName(d *descriptor.FileDescriptorProto, pathType PathType, pn string) string {
+	name := d.GetName()
+	dir, name := filepath.Split(name)
+	name = strings.Replace(filepath.Join(dir, pn, name), ".proto", "_transformer.go", -1)
+
+	if pathType == pathTypeSourceRelative {
+		return name
+	}
+
+	// Does the file have a "go_package" option?
+	// If it does, it may override the filename.
+	if impPath := d.Options.GetGoPackage(); impPath != "" {
+		// Replace the existing dirname with the declared import path.
+		_, name = path.Split(name)
+		name = path.Join(string(impPath), "transform", name)
+		return name
+	}
+
+	return name
 }
 
 // execTemplate executes main template twice with given data, second pass is
