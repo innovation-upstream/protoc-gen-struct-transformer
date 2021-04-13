@@ -18,8 +18,11 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
+	"strings"
 
+	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	plugin "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 	"github.com/golang/protobuf/proto"
 	"github.com/innovation-upstream/protoc-gen-struct-transformer/generator"
@@ -34,6 +37,13 @@ var (
 	debug             = flag.Bool("debug", false, "Add debug information to generated file.")
 	usePackageInPath  = flag.Bool("use-package-in-path", true, "If true, package parameter will be used in path for output file.")
 	paths             = flag.String("paths", "", "How to generate output filenames.")
+)
+
+type PathType int
+
+const (
+	pathTypeImport         PathType = 0
+	pathTypeSourceRelative PathType = 1
 )
 
 func main() {
@@ -59,14 +69,25 @@ func main() {
 	must(err)
 
 	for _, f := range gogoreq.ProtoFile {
+		var pathType PathType
+		switch *paths {
+		case "import":
+			pathType = pathTypeImport
+		case "source_relative":
+			pathType = pathTypeSourceRelative
+		default:
+			log.Fatalf(`Unknown path type %q: want "import" or "source_relative".`, pathType)
+		}
 
-		filename, content, err := generator.ProcessFile(f, packageName, helperPackageName, messages, *debug, *usePackageInPath, *paths)
+		content, err := generator.ProcessFile(f, packageName, helperPackageName, messages, *debug, *paths)
 		if err != nil {
 			if err != generator.ErrFileSkipped {
 				must(err)
 			}
 			continue
 		}
+
+		filename := GoFileName(f, pathType, *packageName)
 
 		content, err = runGoimports(filename, content)
 		if err != nil {
@@ -81,6 +102,15 @@ func main() {
 			Content: proto.String(content),
 		})
 
+		// Generate transformers for dependency
+		depFiles, err := ProcessDependency(gogoreq.ProtoFile, f, messages, pathType)
+		if err != nil {
+			must(err)
+		}
+
+		resp.File = append(resp.File, depFiles...)
+
+		// Generate options.go
 		optPath = filename
 
 		if optPath != "" {
@@ -125,4 +155,61 @@ func runGoimports(filename, content string) (string, error) {
 
 	formatted, err := imports.Process(filename, []byte(content), nil)
 	return string(formatted), err
+}
+
+func GoFileName(d *descriptor.FileDescriptorProto, pathType PathType, pn string) string {
+	name := d.GetName()
+	dir, name := filepath.Split(name)
+	name = strings.Replace(filepath.Join(dir, pn, name), ".proto", "_transformer.go", -1)
+
+	if pathType == pathTypeSourceRelative {
+		return name
+	}
+
+	// Does the file have a "go_package" option?
+	// If it does, it may override the filename.
+	if impPath := d.GetOptions().GetGoPackage(); impPath != "" {
+		// Replace the existing dirname with the declared import path.
+		_, name = path.Split(name)
+		name = path.Join(string(impPath), pn, name)
+		return name
+	}
+
+	return name
+}
+
+func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto *descriptor.FileDescriptorProto, messages generator.MessageOptionList, pathType PathType) ([]*plugin.CodeGeneratorResponse_File, error) {
+	var files []*plugin.CodeGeneratorResponse_File
+	for _, d := range currentProto.GetDependency() {
+		for _, p := range allProtos {
+			if p.GetName() == d {
+				content, err := generator.ProcessFile(p, packageName, helperPackageName, messages, *debug, *paths)
+				if err != nil {
+					if err != generator.ErrFileSkipped {
+						return files, err
+					}
+					continue
+				}
+
+				currentFilename := GoFileName(currentProto, pathType, *packageName)
+				filename := GoFileName(p, pathType, *packageName)
+				filename = strings.Replace(filename, filepath.Dir(filename), filepath.Dir(currentFilename), -1)
+
+				content, err = runGoimports(filename, content)
+				if err != nil {
+					if err != generator.ErrFileSkipped {
+						return files, err
+					}
+					continue
+				}
+
+				files = append(files, &plugin.CodeGeneratorResponse_File{
+					Name:    proto.String(filename),
+					Content: proto.String(content),
+				})
+			}
+		}
+	}
+
+	return files, nil
 }

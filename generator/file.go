@@ -4,9 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
@@ -23,13 +21,6 @@ var (
 	// version information. See Makefile for details.
 	version   = "<dev>"
 	buildTime = "<build_time>"
-)
-
-type PathType int
-
-const (
-	pathTypeImport         PathType = 0
-	pathTypeSourceRelative PathType = 1
 )
 
 // WriteStringer exposes two methods:
@@ -122,15 +113,15 @@ func modelsPath(m proto.Message) (string, error) {
 }
 
 // ProcessFile processes .proto file and returns content as a string.
-func ProcessFile(f *descriptor.FileDescriptorProto, packageName, helperPackageName *string, messages MessageOptionList, debug, usePackageInPath bool, paths string) (string, string, error) {
+func ProcessFile(f *descriptor.FileDescriptorProto, packageName, helperPackageName *string, messages MessageOptionList, debug bool, paths string) (string, error) {
 	path, err := modelsPath(f.Options)
 	if err != nil {
-		return "", "", err
+		return "", err
 	}
 
 	structs, err := source.Parse(path, nil)
 	if err != nil {
-		return "", "", err
+		return "", err
 	}
 
 	w := fileHeader(*f.Name, *f.Package, *packageName)
@@ -158,7 +149,7 @@ func ProcessFile(f *descriptor.FileDescriptorProto, packageName, helperPackageNa
 				p(w, "// %s\n", e)
 				continue
 			}
-			return "", "", err
+			return "", err
 		}
 
 		prefixFields(fields, *helperPackageName)
@@ -177,53 +168,14 @@ func ProcessFile(f *descriptor.FileDescriptorProto, packageName, helperPackageNa
 	}
 
 	if err := execTemplate(w, data); err != nil {
-		return "", "", err
+		return "", err
 	}
 
 	if err := processOneofFields(w, data); err != nil {
-		return "", "", err
+		return "", err
 	}
 
-	var pn string
-	if usePackageInPath {
-		pn = *packageName
-	}
-
-	var absPath string
-	var pathType PathType
-	switch paths {
-	case "import":
-		pathType = pathTypeImport
-	case "source_relative":
-		pathType = pathTypeSourceRelative
-	default:
-		return absPath, w.String(), fmt.Errorf(`Unknown path type %q: want "import" or "source_relative".`, pathType)
-	}
-
-	absPath = goFileName(f, pathType, pn)
-
-	return absPath, w.String(), nil
-}
-
-func goFileName(d *descriptor.FileDescriptorProto, pathType PathType, pn string) string {
-	name := d.GetName()
-	dir, name := filepath.Split(name)
-	name = strings.Replace(filepath.Join(dir, pn, name), ".proto", "_transformer.go", -1)
-
-	if pathType == pathTypeSourceRelative {
-		return name
-	}
-
-	// Does the file have a "go_package" option?
-	// If it does, it may override the filename.
-	if impPath := d.GetOptions().GetGoPackage(); impPath != "" {
-		// Replace the existing dirname with the declared import path.
-		_, name = path.Split(name)
-		name = path.Join(string(impPath), "transform", name)
-		return name
-	}
-
-	return name
+	return w.String(), nil
 }
 
 // execTemplate executes main template twice with given data, second pass is
