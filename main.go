@@ -20,6 +20,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	plugin "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 	"github.com/golang/protobuf/proto"
 	"github.com/innovation-upstream/protoc-gen-struct-transformer/generator"
@@ -81,6 +82,15 @@ func main() {
 			Content: proto.String(content),
 		})
 
+		// Generate transformers for dependency
+		depFiles, err := ProcessDependency(gogoreq.ProtoFile, f, messages)
+		if err != nil {
+			must(err)
+		}
+
+		resp.File = append(resp.File, depFiles...)
+
+		// Generate options.go
 		optPath = filename
 
 		if optPath != "" {
@@ -125,4 +135,36 @@ func runGoimports(filename, content string) (string, error) {
 
 	formatted, err := imports.Process(filename, []byte(content), nil)
 	return string(formatted), err
+}
+
+func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto *descriptor.FileDescriptorProto, messages generator.MessageOptionList) ([]*plugin.CodeGeneratorResponse_File, error) {
+	var files []*plugin.CodeGeneratorResponse_File
+	for _, d := range currentProto.GetDependency() {
+		for _, p := range allProtos {
+			if p.GetName() == d {
+				filename, content, err := generator.ProcessFile(p, packageName, helperPackageName, messages, *debug, *usePackageInPath, *paths)
+				if err != nil {
+					if err != generator.ErrFileSkipped {
+						return files, err
+					}
+					continue
+				}
+
+				content, err = runGoimports(filename, content)
+				if err != nil {
+					if err != generator.ErrFileSkipped {
+						return files, err
+					}
+					continue
+				}
+
+				files = append(files, &plugin.CodeGeneratorResponse_File{
+					Name:    proto.String(filename),
+					Content: proto.String(content),
+				})
+			}
+		}
+	}
+
+	return files, nil
 }
