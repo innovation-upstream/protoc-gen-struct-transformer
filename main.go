@@ -222,7 +222,7 @@ func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto
 		}
 	}
 
-	files = DedupeFileList(allFiles, [])
+	files := DedupeFileList(allFiles, []*plugin.CodeGeneratorResponse_File{})
 
 	return files, nil
 }
