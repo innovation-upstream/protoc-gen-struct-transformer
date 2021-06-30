@@ -104,7 +104,8 @@ func main() {
 		})
 
 		// Generate transformers for dependency
-		depFiles, err := ProcessDependency(gogoreq.ProtoFile, f, messages, pathType)
+		currentFilename := GoFileName(f, pathType, *packageName)
+		depFiles, err := ProcessDependency(gogoreq.ProtoFile, f, messages, pathType, currentFilename)
 		if err != nil {
 			must(err)
 		}
@@ -179,7 +180,7 @@ func GoFileName(d *descriptor.FileDescriptorProto, pathType PathType, pn string)
 	return name
 }
 
-func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto *descriptor.FileDescriptorProto, messages generator.MessageOptionList, pathType PathType) ([]*plugin.CodeGeneratorResponse_File, error) {
+func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto *descriptor.FileDescriptorProto, messages generator.MessageOptionList, pathType PathType, currentFilename string) ([]*plugin.CodeGeneratorResponse_File, error) {
 	var files []*plugin.CodeGeneratorResponse_File
 	for _, d := range currentProto.GetDependency() {
 	ap:
@@ -193,7 +194,6 @@ func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto
 					break ap
 				}
 
-				currentFilename := GoFileName(currentProto, pathType, *packageName)
 				filename := GoFileName(p, pathType, *packageName)
 				filename = strings.Replace(filename, filepath.Dir(filename), filepath.Dir(currentFilename), -1)
 
@@ -210,17 +210,8 @@ func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto
 					Content: proto.String(content),
 				})
 
-				files = append(files, &plugin.CodeGeneratorResponse_File{
-					Name:    proto.String("debug_" + filename),
-					Content: proto.String(fmt.Sprintf("%s", d)),
-				})
-
-				transitiveDepFiles, err := ProcessDependency(allProtos, p, messages, pathType)
+				transitiveDepFiles, err := ProcessDependency(allProtos, p, messages, pathType, currentFilename)
 				if err != nil {
-					files = append(files, &plugin.CodeGeneratorResponse_File{
-						Name:    proto.String("debug_" + filename),
-						Content: proto.String(fmt.Sprintf("%+v", err)),
-					})
 					return files, errors.WithStack(err)
 				}
 
