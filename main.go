@@ -222,17 +222,19 @@ func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto
 		}
 	}
 
-	var files []*plugin.CodeGeneratorResponse_File
-	// De-dupe files
-tdl:
-	for _, t := range allFiles {
-		for _, f := range allFiles {
-			if f.GetName() == t.GetName() {
-				continue tdl
+	/*
+			var files []*plugin.CodeGeneratorResponse_File
+			// De-dupe files
+		tdl:
+			for _, t := range allFiles {
+				for _, f := range allFiles {
+					if f.GetName() == t.GetName() {
+						continue tdl
+					}
+				}
+				files = append(files, t)
 			}
-		}
-		files = append(files, t)
-	}
+	*/
 
-	return files, nil
+	return allFiles, nil
 }
