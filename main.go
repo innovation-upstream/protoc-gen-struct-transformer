@@ -229,16 +229,18 @@ func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto
 
 func DedupeFileList(allFiles []*plugin.CodeGeneratorResponse_File, currentFiles []*plugin.CodeGeneratorResponse_File) []*plugin.CodeGeneratorResponse_File {
 	var files []*plugin.CodeGeneratorResponse_File
-	for _, f := range currentFiles {
-		if f.GetName() == allFiles[0].GetName() {
-			return files
+	if len(allFiles) > 0 {
+		for _, f := range currentFiles {
+			if f.GetName() == allFiles[0].GetName() {
+				return files
+			}
 		}
-	}
 
-	files = append(files, allFiles[0])
+		files = append(files, allFiles[0])
 
-	if len(allFiles) > 1 {
-		files = DedupeFileList(allFiles[1:], files)
+		if len(allFiles) > 1 {
+			files = append(files, DedupeFileList(allFiles[1:], files)...)
+		}
 	}
 
 	return files
