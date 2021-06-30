@@ -181,7 +181,7 @@ func GoFileName(d *descriptor.FileDescriptorProto, pathType PathType, pn string)
 }
 
 func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto *descriptor.FileDescriptorProto, messages generator.MessageOptionList, pathType PathType, currentFilename string) ([]*plugin.CodeGeneratorResponse_File, error) {
-	var files []*plugin.CodeGeneratorResponse_File
+	var allFiles []*plugin.CodeGeneratorResponse_File
 	for _, d := range currentProto.GetDependency() {
 	ap:
 		for _, p := range allProtos {
@@ -189,7 +189,7 @@ func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto
 				content, err := generator.ProcessFile(p, packageName, helperPackageName, messages, *debug, *paths)
 				if err != nil {
 					if err != generator.ErrFileSkipped {
-						return files, errors.WithStack(err)
+						return allFiles, errors.WithStack(err)
 					}
 					break ap
 				}
@@ -200,38 +200,38 @@ func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto
 				content, err = runGoimports(filename, content)
 				if err != nil {
 					if err != generator.ErrFileSkipped {
-						return files, errors.WithStack(err)
+						return allFiles, errors.WithStack(err)
 					}
 					break ap
 				}
 
-				files = append(files, &plugin.CodeGeneratorResponse_File{
+				allFiles = append(allFiles, &plugin.CodeGeneratorResponse_File{
 					Name:    proto.String(filename),
 					Content: proto.String(content),
 				})
 
-				allTransitiveDepFiles, err := ProcessDependency(allProtos, p, messages, pathType, currentFilename)
+				transitiveDepFiles, err := ProcessDependency(allProtos, p, messages, pathType, currentFilename)
 				if err != nil {
-					return files, errors.WithStack(err)
+					return allFiles, errors.WithStack(err)
 				}
 
-				var transitiveDepFiles []*plugin.CodeGeneratorResponse_File
-				// De-dupe allTransitiveDepFiles
-			tdl:
-				for _, t := range allTransitiveDepFiles {
-					for _, f := range files {
-						if f.GetName() == t.GetName() {
-							continue tdl
-						}
-					}
-					transitiveDepFiles = append(transitiveDepFiles, t)
-				}
-
-				files = append(files, transitiveDepFiles...)
+				allFiles = append(allFiles, transitiveDepFiles...)
 
 				break ap
 			}
 		}
+	}
+
+	var files []*plugin.CodeGeneratorResponse_File
+	// De-dupe files
+tdl:
+	for _, t := range allFiles {
+		for _, f := range allFiles {
+			if f.GetName() == t.GetName() {
+				continue tdl
+			}
+		}
+		files = append(files, t)
 	}
 
 	return files, nil
