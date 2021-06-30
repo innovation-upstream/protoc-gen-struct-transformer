@@ -182,11 +182,11 @@ func GoFileName(d *descriptor.FileDescriptorProto, pathType PathType, pn string)
 func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto *descriptor.FileDescriptorProto, messages generator.MessageOptionList, pathType PathType) ([]*plugin.CodeGeneratorResponse_File, error) {
 	var files []*plugin.CodeGeneratorResponse_File
 	for _, d := range currentProto.GetDependency() {
-		fmt.Printf("%s\n", d)
+		fmt.Printf("//%s\n", d)
 	ap:
 		for _, p := range allProtos {
 			if p.GetName() == d {
-				fmt.Printf("found %s\n", d)
+				fmt.Printf("//found %s\n", d)
 				content, err := generator.ProcessFile(p, packageName, helperPackageName, messages, *debug, *paths)
 				if err != nil {
 					if err != generator.ErrFileSkipped {
@@ -212,7 +212,7 @@ func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto
 					Content: proto.String(content),
 				})
 
-				fmt.Printf("get recursive deps for: %s\n", p.GetName())
+				fmt.Printf("//get recursive deps for: %s\n", p.GetName())
 				transitiveDepFiles, err := ProcessDependency(allProtos, p, messages, pathType)
 				if err != nil {
 					return files, errors.WithStack(err)
