@@ -210,9 +210,21 @@ func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto
 					Content: proto.String(content),
 				})
 
-				transitiveDepFiles, err := ProcessDependency(allProtos, p, messages, pathType, currentFilename)
+				allTransitiveDepFiles, err := ProcessDependency(allProtos, p, messages, pathType, currentFilename)
 				if err != nil {
 					return files, errors.WithStack(err)
+				}
+
+				var transitiveDepFiles []*plugin.CodeGeneratorResponse_File
+				// De-dupe allTransitiveDepFiles
+			tdl:
+				for _, t := range allTransitiveDepFiles {
+					for _, f := range files {
+						if f.GetName() == t.GetName() {
+							continue tdl
+						}
+					}
+					transitiveDepFiles = append(transitiveDepFiles, t)
 				}
 
 				files = append(files, transitiveDepFiles...)
