@@ -26,6 +26,7 @@ import (
 	plugin "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 	"github.com/golang/protobuf/proto"
 	"github.com/innovation-upstream/protoc-gen-struct-transformer/generator"
+	"github.com/pkg/errors"
 	"golang.org/x/tools/imports"
 )
 
@@ -181,12 +182,13 @@ func GoFileName(d *descriptor.FileDescriptorProto, pathType PathType, pn string)
 func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto *descriptor.FileDescriptorProto, messages generator.MessageOptionList, pathType PathType) ([]*plugin.CodeGeneratorResponse_File, error) {
 	var files []*plugin.CodeGeneratorResponse_File
 	for _, d := range currentProto.GetDependency() {
+	ap:
 		for _, p := range allProtos {
 			if p.GetName() == d {
 				content, err := generator.ProcessFile(p, packageName, helperPackageName, messages, *debug, *paths)
 				if err != nil {
 					if err != generator.ErrFileSkipped {
-						return files, err
+						return files, errors.WithStack(err)
 					}
 					continue
 				}
@@ -198,7 +200,7 @@ func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto
 				content, err = runGoimports(filename, content)
 				if err != nil {
 					if err != generator.ErrFileSkipped {
-						return files, err
+						return files, errors.WithStack(err)
 					}
 					continue
 				}
@@ -207,6 +209,15 @@ func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto
 					Name:    proto.String(filename),
 					Content: proto.String(content),
 				})
+
+				transitiveDepFiles, err := ProcessDependency(allProtos, p, messages, pathType)
+				if err != nil {
+					return files, errors.WithStack(err)
+				}
+
+				files = append(files, transitiveDepFiles...)
+
+				break ap
 			}
 		}
 	}
