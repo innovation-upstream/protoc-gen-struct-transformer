@@ -125,7 +125,7 @@ func ProcessFile(f *descriptor.FileDescriptorProto, packageName, helperPackageNa
 	}
 
 	w := fileHeader(*f.Name, *f.Package, *packageName)
-	p(w, "// %s\n", f.GetName())
+	p(w, "// %s\n", f.GetDependency())
 
 	if debug {
 		p(w, "%s", messages)
