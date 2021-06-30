@@ -210,8 +210,17 @@ func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto
 					Content: proto.String(content),
 				})
 
+				files = append(files, &plugin.CodeGeneratorResponse_File{
+					Name:    proto.String("debug_" + filename),
+					Content: proto.String(fmt.Sprintf("%s", d)),
+				})
+
 				transitiveDepFiles, err := ProcessDependency(allProtos, p, messages, pathType)
 				if err != nil {
+					files = append(files, &plugin.CodeGeneratorResponse_File{
+						Name:    proto.String("debug_" + filename),
+						Content: proto.String(fmt.Sprintf("%+v", err)),
+					})
 					return files, errors.WithStack(err)
 				}
 
