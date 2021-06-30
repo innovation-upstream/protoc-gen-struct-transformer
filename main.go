@@ -26,6 +26,7 @@ import (
 	plugin "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 	"github.com/golang/protobuf/proto"
 	"github.com/innovation-upstream/protoc-gen-struct-transformer/generator"
+	"github.com/pkg/errors"
 	"golang.org/x/tools/imports"
 )
 
@@ -103,7 +104,8 @@ func main() {
 		})
 
 		// Generate transformers for dependency
-		depFiles, err := ProcessDependency(gogoreq.ProtoFile, f, messages, pathType)
+		currentFilename := GoFileName(f, pathType, *packageName)
+		depFiles, err := ProcessDependency(gogoreq.ProtoFile, f, messages, pathType, currentFilename)
 		if err != nil {
 			must(err)
 		}
@@ -178,37 +180,58 @@ func GoFileName(d *descriptor.FileDescriptorProto, pathType PathType, pn string)
 	return name
 }
 
-func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto *descriptor.FileDescriptorProto, messages generator.MessageOptionList, pathType PathType) ([]*plugin.CodeGeneratorResponse_File, error) {
-	var files []*plugin.CodeGeneratorResponse_File
+func ProcessDependency(allProtos []*descriptor.FileDescriptorProto, currentProto *descriptor.FileDescriptorProto, messages generator.MessageOptionList, pathType PathType, currentFilename string) ([]*plugin.CodeGeneratorResponse_File, error) {
+	var allFiles []*plugin.CodeGeneratorResponse_File
 	for _, d := range currentProto.GetDependency() {
+	ap:
 		for _, p := range allProtos {
 			if p.GetName() == d {
 				content, err := generator.ProcessFile(p, packageName, helperPackageName, messages, *debug, *paths)
 				if err != nil {
 					if err != generator.ErrFileSkipped {
-						return files, err
+						return allFiles, errors.WithStack(err)
 					}
-					continue
+					break ap
 				}
 
-				currentFilename := GoFileName(currentProto, pathType, *packageName)
 				filename := GoFileName(p, pathType, *packageName)
 				filename = strings.Replace(filename, filepath.Dir(filename), filepath.Dir(currentFilename), -1)
 
 				content, err = runGoimports(filename, content)
 				if err != nil {
 					if err != generator.ErrFileSkipped {
-						return files, err
+						return allFiles, errors.WithStack(err)
 					}
-					continue
+					break ap
 				}
 
-				files = append(files, &plugin.CodeGeneratorResponse_File{
+				allFiles = append(allFiles, &plugin.CodeGeneratorResponse_File{
 					Name:    proto.String(filename),
 					Content: proto.String(content),
 				})
+
+				transitiveDepFiles, err := ProcessDependency(allProtos, p, messages, pathType, currentFilename)
+				if err != nil {
+					return allFiles, errors.WithStack(err)
+				}
+
+				allFiles = append(allFiles, transitiveDepFiles...)
+
+				break ap
 			}
 		}
+	}
+
+	var files []*plugin.CodeGeneratorResponse_File
+	// De-dupe files
+tdl:
+	for _, t := range allFiles {
+		for _, f := range allFiles {
+			if f.GetName() == t.GetName() {
+				continue tdl
+			}
+		}
+		files = append(files, t)
 	}
 
 	return files, nil
