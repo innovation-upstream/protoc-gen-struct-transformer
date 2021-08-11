@@ -1,0 +1,8 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["nulls.go"],
+    importpath = "__do_not_match__/example/nulls",
+    visibility = ["//visibility:public"],
+)

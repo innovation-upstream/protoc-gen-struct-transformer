@@ -1,0 +1,57 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "doc.go",
+        "error.go",
+        "field.go",
+        "file.go",
+        "message.go",
+        "message_options.go",
+        "oneof.go",
+        "option_extractor.go",
+        "print.go",
+        "request.go",
+        "template.go",
+        "types.go",
+    ],
+    importpath = "__do_not_match__/generator",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_gogo_protobuf//gogoproto:go_default_library",
+        "@com_github_gogo_protobuf//proto:go_default_library",
+        "@com_github_gogo_protobuf//protoc-gen-gogo/descriptor:go_default_library",
+        "@com_github_gogo_protobuf//protoc-gen-gogo/plugin:go_default_library",
+        "@com_github_iancoleman_strcase//:go_default_library",
+        "@com_github_innovation_upstream_protoc_gen_struct_transformer//options:go_default_library",
+        "@com_github_innovation_upstream_protoc_gen_struct_transformer//source:go_default_library",
+        "@com_github_pkg_errors//:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "field_test.go",
+        "file_test.go",
+        "generator_suite_test.go",
+        "message_test.go",
+        "oneof_test.go",
+        "request_test.go",
+        "template_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "@com_github_gogo_protobuf//proto:go_default_library",
+        "@com_github_gogo_protobuf//protoc-gen-gogo/descriptor:go_default_library",
+        "@com_github_gogo_protobuf//protoc-gen-gogo/plugin:go_default_library",
+        "@com_github_innovation_upstream_protoc_gen_struct_transformer//options:go_default_library",
+        "@com_github_innovation_upstream_protoc_gen_struct_transformer//source:go_default_library",
+        "@com_github_onsi_ginkgo//:go_default_library",
+        "@com_github_onsi_ginkgo//extensions/table:go_default_library",
+        "@com_github_onsi_gomega//:go_default_library",
+        "@com_github_onsi_gomega//gstruct:go_default_library",
+        "@com_github_pkg_errors//:go_default_library",
+    ],
+)
