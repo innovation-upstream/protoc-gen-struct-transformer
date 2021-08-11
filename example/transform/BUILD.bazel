@@ -1,0 +1,17 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "custom_transformer.go",
+        "message_transformer.go",
+        "options.go",
+    ],
+    importpath = "github.com/innovation-upstream/protoc-gen-struct-transformer/example/transform",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//example:go_default_library",
+        "//example/helpers:go_default_library",
+        "//example/model:go_default_library",
+    ],
+)
