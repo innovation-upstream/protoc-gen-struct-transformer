@@ -3,10 +3,10 @@ package generator
 import (
 	"errors"
 
-	"github.com/innovation-upstream/protoc-gen-struct-transformer/options"
-	"github.com/innovation-upstream/protoc-gen-struct-transformer/source"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/options"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/source"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
@@ -287,7 +287,11 @@ var _ = Describe("Field", func() {
 
 		DescribeTable("check result",
 			func(pname, gname string, ftype *descriptor.FieldDescriptorProto_Type, sf source.FieldInfo, expected *Field) {
-				got, err := processSimpleField(nil, pname, gname, ftype, sf)
+				tn := "SOME_FIELD"
+				fdp := &descriptor.FieldDescriptorProto{
+					TypeName: &tn,
+				}
+				got, err := processSimpleField(nil, pname, gname, ftype, sf, fdp)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(*got).To(MatchAllFields(Fields{
