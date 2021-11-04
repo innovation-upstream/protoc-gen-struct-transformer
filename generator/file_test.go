@@ -228,11 +228,6 @@ var _ = Describe("File", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
 
-			It("return abs path for file", func() {
-				p, err := modelsPath(f.Options)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(p).To(Equal(path))
-			})
 		})
 	})
 
