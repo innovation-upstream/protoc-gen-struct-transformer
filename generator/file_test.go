@@ -7,10 +7,10 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/innovation-upstream/protoc-gen-struct-transformer/options"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	plugin "github.com/gogo/protobuf/protoc-gen-gogo/plugin"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/options"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
@@ -190,10 +190,10 @@ var _ = Describe("File", func() {
 				expectedContent, err := ioutil.ReadFile("testdata/processfile.go.golden")
 				Expect(err).NotTo(HaveOccurred())
 
-				absPath, content, err := ProcessFile(f, sp("product"), sp("helper-package"), map[string]MessageOption{}, false, false)
+				content, err := ProcessFile(f, sp("product"), sp("helper-package"), map[string]MessageOption{}, false, "")
 				Expect(err).NotTo(HaveOccurred())
 				Expect(content).To(Equal(string(expectedContent)))
-				Expect(absPath).To(Equal("product_transformer.go"))
+				//Expect(absPath).To(Equal("product_transformer.go"))
 			})
 		})
 	})
