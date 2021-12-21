@@ -76,6 +76,19 @@ func inspect(output StructureList) func(n ast.Node) bool {
 					typ = at.Sel.Name
 				case *ast.Ident:
 					typ = at.Name
+				case *ast.StarExpr: // pointer to something
+					switch se := at.X.(type) {
+					case *ast.Ident: // *SomeStruct, *string, *int etc.
+						typ := se.Name
+						output[structName][fname] = FieldInfo{Type: typ, IsPointer: true}
+					case *ast.SelectorExpr: // *time.Time
+						typ := fmt.Sprintf("%s.%s", se.X.(*ast.Ident).Name, se.Sel.Name)
+						output[structName][fname] = FieldInfo{Type: typ, IsPointer: true}
+					default:
+						typ := fmt.Sprintf("%s", reflect.TypeOf(t))
+						output[structName]["unsupported_star_expr_"+typ] = FieldInfo{Type: fmt.Sprintf("%T", se)}
+						return true
+					}
 				default:
 					typ := fmt.Sprintf("%s", reflect.TypeOf(t))
 					output[structName]["unsupported_array_type_"+typ] = FieldInfo{Type: fmt.Sprintf("%T", at)}
