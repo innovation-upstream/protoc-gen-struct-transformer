@@ -170,10 +170,6 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 	sf.Type = strcase.ToCamel(strings.Replace(sf.Type, ".", "", -1)) // pkg.Type => PkgType
 	t := types[*ftype]
 
-	// sf: NullsString, pbType: , goType: string, ft: TYPE_STRING, name: Tags, pbaname: Tags
-	p(w, "// sf: %#v, pbType: %q, goType: %q, ft: %q, pname: %q, gname: %q\n",
-		sf, t.pbType, t.goType, ftype, pname, gname)
-
 	sft := strings.ToLower(sf.Type)
 	tpb := strings.ToLower(t.pbType)
 	tgo := strings.ToLower(t.goType)
@@ -182,6 +178,8 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 		Name:      gname,
 		ProtoName: pname,
 	}
+
+	p(w, "/*FIELDS:sft: %+v tpb: %+v tgo: %+v*/", sft, tpb, tgo)
 
 	switch true {
 
