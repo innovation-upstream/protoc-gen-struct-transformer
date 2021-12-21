@@ -152,8 +152,14 @@ func ProcessFile(f *descriptor.FileDescriptorProto, packageName, helperPackageNa
 			return "", err
 		}
 
+		for _, f := range fields {
+			p(w, "// before: usepkg: %+v\n", f)
+		}
 		prefixFields(fields, *helperPackageName)
 
+		for _, f := range fields {
+			p(w, "// after: usepkg: %+v\n", f)
+		}
 		data = append(data,
 			&Data{
 				Src:        m.GetName(),

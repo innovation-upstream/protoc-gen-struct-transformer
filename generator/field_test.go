@@ -150,7 +150,7 @@ var _ = Describe("Field", func() {
 
 		DescribeTable("check result",
 			func(fdp *descriptor.FieldDescriptorProto, pname, gname, pbType string, mo MessageOption, custom bool, expected *Field) {
-				got, err := processSubMessage(nil, fdp, pname, gname, pbType, mo, goStruct, custom)
+				got, err := processSubMessage(nil, fdp, pname, gname, pbType, mo, goStruct, custom, false)
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(*got).To(MatchAllFields(Fields{

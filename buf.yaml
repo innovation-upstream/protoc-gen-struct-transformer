@@ -1,5 +1,8 @@
 version: v1
 name: buf.build/innovation-upstream/protoc-gen-struct-transformer
+build:
+  excludes:
+    - bazel-protoc-gen-struct-transformer
 lint:
   use:
     - DEFAULT
