@@ -79,6 +79,7 @@ func processSubMessage(w io.Writer,
 	mo MessageOption,
 	goStructFields source.Structure,
 	customTransformer bool,
+	forceUsePackage bool,
 ) (*Field, error) {
 
 	if fdp == nil {
@@ -160,6 +161,10 @@ func processSubMessage(w io.Writer,
 		}
 	}
 
+	if forceUsePackage {
+		f.UsePackage = true
+	}
+
 	return f, nil
 }
 
@@ -169,10 +174,6 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 
 	sf.Type = strcase.ToCamel(strings.Replace(sf.Type, ".", "", -1)) // pkg.Type => PkgType
 	t := types[*ftype]
-
-	// sf: NullsString, pbType: , goType: string, ft: TYPE_STRING, name: Tags, pbaname: Tags
-	p(w, "// sf: %#v, pbType: %q, goType: %q, ft: %q, pname: %q, gname: %q\n",
-		sf, t.pbType, t.goType, ftype, pname, gname)
 
 	sft := strings.ToLower(sf.Type)
 	tpb := strings.ToLower(t.pbType)
@@ -239,6 +240,11 @@ func processField(
 		return nil, pkgerrors.Wrap(err, "mapAs option")
 	}
 
+	forceUsePackage := getBoolOption(fdp.Options, options.E_ForceUseHelperPackage)
+	if _, ok := err.(errOptionNotExists); err != nil && err != ErrNilOptions && !ok {
+		return nil, pkgerrors.Wrap(err, "forceUseHelperPackage option")
+	}
+
 	pname, gname := prepareFieldNames(*fdp.Name, mapAs, mapTo)
 
 	// check if field exists in destination/Go structure.
@@ -262,6 +268,8 @@ func processField(
 		p(w, "// fdp.Options: %s\n\n", strings.Replace(fmt.Sprintf("%#v", opt), "\n", "", -1))
 	}
 	p(w, "// fdp.Name: %q, mapAs: %q, mapTo: %q\n", *fdp.Name, mapAs, mapTo)
+	p(w, "// pname: %q, gname: %q, fdp: %+v\n", pname, gname, fdp)
+	p(w, "// gsf: %+v\n", goStructFields[gname])
 
 	// Process subMessages. For details see comments for the TypeName.
 	if typ := fdp.TypeName; *fdp.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE && typ != nil {
@@ -280,7 +288,7 @@ func processField(
 		// Submessage has a name like ".package.type", 1: removes first ".".
 		mo, _ := subMessages[t[1:]]
 		// TODO(ekhabarov): pass gf instead of goStructFields
-		return processSubMessage(w, fdp, pname, gname, t, mo, goStructFields, customTransformer)
+		return processSubMessage(w, fdp, pname, gname, t, mo, goStructFields, customTransformer, forceUsePackage)
 	}
 
 	return processSimpleField(w, pname, gname, fdp.Type, gf, fdp)
