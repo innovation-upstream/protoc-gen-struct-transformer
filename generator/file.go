@@ -126,6 +126,7 @@ func ProcessFile(f *descriptor.FileDescriptorProto, packageName, helperPackageNa
 
 	w := fileHeader(*f.Name, *f.Package, *packageName)
 
+	fmt.Printf("STRUCTS: %+v\n", structs)
 	if debug {
 		p(w, "%s", messages)
 	}
