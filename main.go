@@ -48,6 +48,7 @@ const (
 )
 
 func main() {
+	os.Exit(1)
 	flag.Parse()
 	if *versionFlag {
 		fmt.Println(generator.Version())

@@ -2,6 +2,7 @@ package generator
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"path/filepath"
@@ -125,6 +126,8 @@ func ProcessFile(f *descriptor.FileDescriptorProto, packageName, helperPackageNa
 	}
 
 	w := fileHeader(*f.Name, *f.Package, *packageName)
+
+	return "", errors.New(fmt.Sprintf("STRUCTS: %+v\n", structs))
 
 	if debug {
 		p(w, "%s", messages)
