@@ -170,10 +170,6 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 	sf.Type = strcase.ToCamel(strings.Replace(sf.Type, ".", "", -1)) // pkg.Type => PkgType
 	t := types[*ftype]
 
-	// sf: NullsString, pbType: , goType: string, ft: TYPE_STRING, name: Tags, pbaname: Tags
-	p(w, "// sf: %#v, pbType: %q, goType: %q, ft: %q, pname: %q, gname: %q\n",
-		sf, t.pbType, t.goType, ftype, pname, gname)
-
 	sft := strings.ToLower(sf.Type)
 	tpb := strings.ToLower(t.pbType)
 	tgo := strings.ToLower(t.goType)
@@ -262,6 +258,7 @@ func processField(
 		p(w, "// fdp.Options: %s\n\n", strings.Replace(fmt.Sprintf("%#v", opt), "\n", "", -1))
 	}
 	p(w, "// fdp.Name: %q, mapAs: %q, mapTo: %q\n", *fdp.Name, mapAs, mapTo)
+	p(w, "// pname: %q, gname: %q, fdp: %+v\n", pname, gname, fdp)
 
 	// Process subMessages. For details see comments for the TypeName.
 	if typ := fdp.TypeName; *fdp.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE && typ != nil {
