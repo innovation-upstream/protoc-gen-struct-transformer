@@ -40,4 +40,7 @@ extend google.protobuf.FieldOptions {
   string map_as = 5304;
   // If true, the custom transformer will be used for the field.
   bool custom = 5305;
+  // If true and the field is a sub message, the field will assume a transformer
+  // function exists in helper package
+  bool force_use_helper_package = 5306;
 }
