@@ -1,5 +1,7 @@
 package generator
 
+/*
+
 import (
 	"bytes"
 	"io/ioutil"
@@ -344,3 +346,4 @@ package fff
 	})
 
 })
+*/
