@@ -1,0 +1,5 @@
+version: v1
+plugins:
+  - name: gogofaster
+    out: pb
+    opt: paths=import
