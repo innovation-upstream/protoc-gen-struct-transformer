@@ -25,21 +25,21 @@ func wktgoogleProtobufTimestamp(pname, gname string, gf source.FieldInfo, pnulla
 	p2g := ""
 	g2p := ""
 
-	if gf.Type != "time.Time" {
-		g := strcase.ToCamel(strings.Replace(gf.Type, ".", "", -1))
-		p := "Time"
+	//if gf.Type != "time.Time" {
+	g := strcase.ToCamel(strings.Replace(gf.Type, ".", "", -1))
+	p := "Time"
 
-		if pnullable {
-			p += "Ptr"
-		}
-
-		if gf.IsPointer {
-			g += "Ptr"
-		}
-
-		p2g = fmt.Sprintf("%sTo%s", p, g)
-		g2p = fmt.Sprintf("%sTo%s", g, p)
+	if pnullable {
+		p += "Ptr"
 	}
+
+	if gf.IsPointer {
+		g += "Ptr"
+	}
+
+	p2g = fmt.Sprintf("%sTo%s", p, g)
+	g2p = fmt.Sprintf("%sTo%s", g, p)
+	//}
 
 	return &Field{
 		Name:          gname,
@@ -187,6 +187,7 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 		ProtoName: pname,
 	}
 
+	p(w, "// sft: %+v tpb: %+v tgo: %+v\n", sft, tpb, tgo)
 	switch true {
 
 	case (sft == tpb && tpb != "") || (sft == tgo && tpb == ""): // equal types
