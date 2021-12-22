@@ -3,8 +3,8 @@ package generator
 import (
 	"io"
 
-	"github.com/innovation-upstream/protoc-gen-struct-transformer/source"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/source"
 )
 
 // processMessage processes each message regardless of contains it an options or
@@ -45,6 +45,7 @@ func processMessage(
 
 	for _, f := range msg.Field {
 		pf, err := processField(debugWriter, f, subMessages, tsf)
+		p(w, "// FIELD: %+v\n", *pf)
 		if err != nil {
 			if e, ok := err.(loggableError); ok {
 				p(w, "// %s\n", e)
