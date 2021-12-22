@@ -3,8 +3,8 @@ package generator
 import (
 	"io"
 
-	"github.com/innovation-upstream/protoc-gen-struct-transformer/source"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
+	"github.com/innovation-upstream/protoc-gen-struct-transformer/source"
 )
 
 // processMessage processes each message regardless of contains it an options or

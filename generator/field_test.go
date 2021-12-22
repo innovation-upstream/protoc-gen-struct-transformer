@@ -82,9 +82,9 @@ var _ = Describe("Field", func() {
 					Entry("Time", "protoName", "name", "time.Time", false, false, Field{
 						Name:          "name",
 						ProtoName:     "protoName",
-						ProtoToGoType: "",
-						GoToProtoType: "",
-						UsePackage:    false,
+						ProtoToGoType: "TimeToTimeTime",
+						GoToProtoType: "TimeTimeToTime",
+						UsePackage:    true,
 					}),
 				)
 			})
@@ -542,11 +542,11 @@ var _ = Describe("Field", func() {
 				Name:           "TimeField",
 				ProtoName:      "TimeField",
 				ProtoType:      "",
-				ProtoToGoType:  "",
-				GoToProtoType:  "",
+				ProtoToGoType:  "TimePtrToTimeTime",
+				GoToProtoType:  "TimeTimeToTimePtr",
 				GoIsPointer:    false,
 				ProtoIsPointer: false,
-				UsePackage:     false,
+				UsePackage:     true,
 				OneofDecl:      "",
 				Opts:           "",
 			}, nil),

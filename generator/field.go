@@ -25,21 +25,21 @@ func wktgoogleProtobufTimestamp(pname, gname string, gf source.FieldInfo, pnulla
 	p2g := ""
 	g2p := ""
 
-	if gf.Type != "time.Time" {
-		g := strcase.ToCamel(strings.Replace(gf.Type, ".", "", -1))
-		p := "Time"
+	//if gf.Type != "time.Time" {
+	g := strcase.ToCamel(strings.Replace(gf.Type, ".", "", -1))
+	p := "Time"
 
-		if pnullable {
-			p += "Ptr"
-		}
-
-		if gf.IsPointer {
-			g += "Ptr"
-		}
-
-		p2g = fmt.Sprintf("%sTo%s", p, g)
-		g2p = fmt.Sprintf("%sTo%s", g, p)
+	if pnullable {
+		p += "Ptr"
 	}
+
+	if gf.IsPointer {
+		g += "Ptr"
+	}
+
+	p2g = fmt.Sprintf("%sTo%s", p, g)
+	g2p = fmt.Sprintf("%sTo%s", g, p)
+	//}
 
 	return &Field{
 		Name:          gname,
