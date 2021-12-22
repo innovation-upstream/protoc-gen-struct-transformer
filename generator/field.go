@@ -187,6 +187,7 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 		ProtoName: pname,
 	}
 
+	p(w, "// sft: %+v tpb: %+v tgo: %+v\n", sft, tpb, tgo)
 	switch true {
 
 	case (sft == tpb && tpb != "") || (sft == tgo && tpb == ""): // equal types
