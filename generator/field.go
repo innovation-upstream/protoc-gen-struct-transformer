@@ -81,6 +81,7 @@ func processSubMessage(w io.Writer,
 	customTransformer bool,
 	forceUsePackage bool,
 ) (*Field, error) {
+	p(w, "0000: %s %s %s", pname, gname, pbtype)
 
 	if fdp == nil {
 		return nil, errors.New("input field is nil")
@@ -276,6 +277,7 @@ func processField(
 
 	// Process subMessages. For details see comments for the TypeName.
 	if typ := fdp.TypeName; *fdp.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE && typ != nil {
+		p(w, "0001: here %s %s", pname, gname)
 		t := *typ
 		switch t {
 		case ".google.protobuf.Timestamp":
