@@ -116,6 +116,15 @@ var E_ForceUseHelperPackage = &proto.ExtensionDesc{
 	Filename:      "options/annotations.proto",
 }
 
+var E_ForceAssignable = &proto.ExtensionDesc{
+	ExtendedType:  (*descriptor.FieldOptions)(nil),
+	ExtensionType: (*bool)(nil),
+	Field:         5307,
+	Name:          "transformer.force_assignable",
+	Tag:           "varint,5306,opt,name=force_assignable",
+	Filename:      "options/annotations.proto",
+}
+
 func init() {
 	proto.RegisterExtension(E_GoModelsFilePath)
 	proto.RegisterExtension(E_GoRepoPackage)
@@ -127,6 +136,7 @@ func init() {
 	proto.RegisterExtension(E_MapAs)
 	proto.RegisterExtension(E_Custom)
 	proto.RegisterExtension(E_ForceUseHelperPackage)
+	proto.RegisterExtension(E_ForceAssignable)
 }
 
 func init() { proto.RegisterFile("options/annotations.proto", fileDescriptor_5df765dc541320cc) }

@@ -25,21 +25,21 @@ func wktgoogleProtobufTimestamp(pname, gname string, gf source.FieldInfo, pnulla
 	p2g := ""
 	g2p := ""
 
-	if gf.Type != "time.Time" {
-		g := strcase.ToCamel(strings.Replace(gf.Type, ".", "", -1))
-		p := "Time"
+	//if gf.Type != "time.Time" {
+	g := strcase.ToCamel(strings.Replace(gf.Type, ".", "", -1))
+	p := "Time"
 
-		if pnullable {
-			p += "Ptr"
-		}
-
-		if gf.IsPointer {
-			g += "Ptr"
-		}
-
-		p2g = fmt.Sprintf("%sTo%s", p, g)
-		g2p = fmt.Sprintf("%sTo%s", g, p)
+	if pnullable {
+		p += "Ptr"
 	}
+
+	if gf.IsPointer {
+		g += "Ptr"
+	}
+
+	p2g = fmt.Sprintf("%sTo%s", p, g)
+	g2p = fmt.Sprintf("%sTo%s", g, p)
+	//}
 
 	return &Field{
 		Name:          gname,
@@ -80,6 +80,7 @@ func processSubMessage(w io.Writer,
 	goStructFields source.Structure,
 	customTransformer bool,
 	forceUsePackage bool,
+	forceAssignable bool,
 ) (*Field, error) {
 
 	if fdp == nil {
@@ -137,8 +138,10 @@ func processSubMessage(w io.Writer,
 	}
 	isNullable := extractNullOption(fdp)
 
-	p2g = fmt.Sprintf(tpl, pbtype, pb)
-	g2p = fmt.Sprintf(tpl, pb, pbtype)
+	if !forceAssignable {
+		p2g = fmt.Sprintf(tpl, pbtype, pb)
+		g2p = fmt.Sprintf(tpl, pb, pbtype)
+	}
 
 	f := &Field{
 		Name:           strcase.ToCamel(fname),
@@ -248,6 +251,11 @@ func processField(
 		return nil, pkgerrors.Wrap(err, "forceUseHelperPackage option")
 	}
 
+	forseAssignable := getBoolOption(fdp.Options, options.E_ForceAssignable)
+	if _, ok := err.(errOptionNotExists); err != nil && err != ErrNilOptions && !ok {
+		return nil, pkgerrors.Wrap(err, "forceUseHelperPackage option")
+	}
+
 	pname, gname := prepareFieldNames(*fdp.Name, mapAs, mapTo)
 
 	// check if field exists in destination/Go structure.
@@ -291,7 +299,7 @@ func processField(
 		// Submessage has a name like ".package.type", 1: removes first ".".
 		mo, _ := subMessages[t[1:]]
 		// TODO(ekhabarov): pass gf instead of goStructFields
-		return processSubMessage(w, fdp, pname, gname, t, mo, goStructFields, customTransformer, forceUsePackage)
+		return processSubMessage(w, fdp, pname, gname, t, mo, goStructFields, customTransformer, forceUsePackage, forseAssignable)
 	}
 
 	return processSimpleField(w, pname, gname, fdp.Type, gf, fdp)

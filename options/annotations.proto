@@ -43,4 +43,5 @@ extend google.protobuf.FieldOptions {
   // If true and the field is a sub message, the field will assume a transformer
   // function exists in helper package
   bool force_use_helper_package = 5306;
+  bool force_assignable = 5307;
 }
