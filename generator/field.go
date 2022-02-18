@@ -137,8 +137,13 @@ func processSubMessage(w io.Writer,
 	}
 	isNullable := extractNullOption(fdp)
 
-	p2g = fmt.Sprintf(tpl, pbtype, pb)
-	g2p = fmt.Sprintf(tpl, pb, pbtype)
+	// Only use transform function if the types have different names (This is a
+	// "best guess" because we do not konw if they also have the same go pkg, if
+	// they don't this will cause a compile time error in generated code)
+	if gname != pname {
+		p2g = fmt.Sprintf(tpl, pbtype, pb)
+		g2p = fmt.Sprintf(tpl, pb, pbtype)
+	}
 
 	f := &Field{
 		Name:           strcase.ToCamel(fname),
@@ -270,9 +275,6 @@ func processField(
 	if opt := fdp.Options; opt != nil {
 		p(w, "// fdp.Options: %s\n\n", strings.Replace(fmt.Sprintf("%#v", opt), "\n", "", -1))
 	}
-	p(w, "// fdp.Name: %q, mapAs: %q, mapTo: %q\n", *fdp.Name, mapAs, mapTo)
-	p(w, "// pname: %q, gname: %q, fdp: %+v\n", pname, gname, fdp)
-	p(w, "// gsf: %+v\n", goStructFields[gname])
 
 	// Process subMessages. For details see comments for the TypeName.
 	if typ := fdp.TypeName; *fdp.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE && typ != nil {
