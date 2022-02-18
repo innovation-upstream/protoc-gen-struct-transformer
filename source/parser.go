@@ -109,17 +109,18 @@ func inspect(output StructureList) func(n ast.Node) bool {
 // Parse gets path to source file or content of source file as a io.Reader and
 // run inspect functions on it. Function returns list of structures with their
 // fields.
-func Parse(path string, src io.Reader) (StructureList, error) {
+func Parse(path string, src io.Reader) (StructureList, string, error) {
 	node, err := parser.ParseFile(token.NewFileSet(), path, src, 0)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
+	pkg := node.Name.Name
 	info := StructureList{}
 
 	ast.Inspect(node, inspect(info))
 
-	return info, nil
+	return info, pkg, nil
 }
 
 // Lookup return structure by name from parsed source file or an error if
