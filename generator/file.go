@@ -119,7 +119,7 @@ func ProcessFile(f *descriptor.FileDescriptorProto, packageName, helperPackageNa
 		return "", err
 	}
 
-	structs, err := source.Parse(path, nil)
+	structs, pkg, err := source.Parse(path, nil)
 	if err != nil {
 		return "", err
 	}
@@ -143,7 +143,7 @@ func ProcessFile(f *descriptor.FileDescriptorProto, packageName, helperPackageNa
 	var data []*Data
 
 	for _, m := range f.MessageType {
-		fields, sno, err := processMessage(w, m, messages, structs, debug)
+		fields, sno, err := processMessage(w, m, messages, structs, debug, pkg, protoPackage)
 		if err != nil {
 			if e, ok := err.(loggableError); ok {
 				p(w, "// %s\n", e)
