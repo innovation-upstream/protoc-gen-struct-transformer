@@ -16,6 +16,8 @@ func processMessage(
 	subMessages map[string]MessageOption,
 	str source.StructureList,
 	debug bool,
+	strPkg string,
+	protoGoPkg string,
 ) ([]Field, string, error) {
 
 	structName, err := extractStructNameOption(msg)
@@ -44,7 +46,7 @@ func processMessage(
 	fields := []Field{}
 
 	for _, f := range msg.Field {
-		pf, err := processField(debugWriter, f, subMessages, tsf)
+		pf, err := processField(debugWriter, f, subMessages, tsf, strPkg, protoGoPkg)
 		if err != nil {
 			if e, ok := err.(loggableError); ok {
 				p(w, "// %s\n", e)

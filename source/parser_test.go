@@ -12,10 +12,11 @@ var _ = Describe("Parser", func() {
 
 	DescribeTable("check result",
 		func(fileContent string, expected StructureList) {
-			str, err := Parse("file.go", bytes.NewReader([]byte(fileContent)))
+			str, pkg, err := Parse("file.go", bytes.NewReader([]byte(fileContent)))
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(str).To(Equal(expected))
+			Expect(pkg).To(Equal("model"))
 		},
 
 		Entry("File without structures", `package model`, StructureList{}),
@@ -210,7 +211,7 @@ type (
 		Context("when call Lookup with existing struct", func() {
 
 			It("returns set of fields", func() {
-				str, err := Parse("file.go", bytes.NewReader([]byte(`package model
+				str, pkg, err := Parse("file.go", bytes.NewReader([]byte(`package model
 
 type (
 	MyStruct struct {
@@ -226,6 +227,7 @@ type (
 					"ID":   {Type: "int", IsPointer: false},
 					"Name": {Type: "string", IsPointer: true},
 				}))
+				Expect(pkg).To(Equal("model"))
 
 			})
 		})
@@ -233,7 +235,7 @@ type (
 		Context("when call Lookup with non-existing struct", func() {
 
 			It("returns set of fields", func() {
-				str, err := Parse("file.go", bytes.NewReader([]byte(`package model
+				str, pkg, err := Parse("file.go", bytes.NewReader([]byte(`package model
 
 type (
 	MyStruct struct {
@@ -246,6 +248,7 @@ type (
 				fields, err := Lookup(str, "NotExists")
 				Expect(err).To(MatchError(`structure "NotExists" not found`))
 				Expect(fields).To(BeNil())
+				Expect(pkg).To(Equal("model"))
 			})
 		})
 	})

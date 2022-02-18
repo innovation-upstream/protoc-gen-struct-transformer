@@ -80,6 +80,8 @@ func processSubMessage(w io.Writer,
 	goStructFields source.Structure,
 	customTransformer bool,
 	forceUsePackage bool,
+	gStructPkg string,
+	protoGoPkg string,
 ) (*Field, error) {
 
 	if fdp == nil {
@@ -137,8 +139,14 @@ func processSubMessage(w io.Writer,
 	}
 	isNullable := extractNullOption(fdp)
 
-	p2g = fmt.Sprintf(tpl, pbtype, pb)
-	g2p = fmt.Sprintf(tpl, pb, pbtype)
+	// Only use transform function if the types have different names (This is a
+	// "best guess" because we do not konw if they also have the same go pkg, if
+	// they don't this will cause a compile time error in generated code)
+	p(w, "// %s %s\n", gStructPkg, protoGoPkg)
+	if gname != pname && gStructPkg != protoGoPkg {
+		p2g = fmt.Sprintf(tpl, pbtype, pb)
+		g2p = fmt.Sprintf(tpl, pb, pbtype)
+	}
 
 	f := &Field{
 		Name:           strcase.ToCamel(fname),
@@ -226,6 +234,8 @@ func processField(
 	fdp *descriptor.FieldDescriptorProto,
 	subMessages MessageOptionList,
 	goStructFields source.Structure,
+	gStructPkg string,
+	protoGoPkg string,
 ) (*Field, error) {
 	// If field has transformer.skip == true, it will be not processed.
 	if skip := extractSkipOption(fdp.Options); skip {
@@ -270,9 +280,6 @@ func processField(
 	if opt := fdp.Options; opt != nil {
 		p(w, "// fdp.Options: %s\n\n", strings.Replace(fmt.Sprintf("%#v", opt), "\n", "", -1))
 	}
-	p(w, "// fdp.Name: %q, mapAs: %q, mapTo: %q\n", *fdp.Name, mapAs, mapTo)
-	p(w, "// pname: %q, gname: %q, fdp: %+v\n", pname, gname, fdp)
-	p(w, "// gsf: %+v\n", goStructFields[gname])
 
 	// Process subMessages. For details see comments for the TypeName.
 	if typ := fdp.TypeName; *fdp.Type == descriptor.FieldDescriptorProto_TYPE_MESSAGE && typ != nil {
@@ -291,7 +298,7 @@ func processField(
 		// Submessage has a name like ".package.type", 1: removes first ".".
 		mo, _ := subMessages[t[1:]]
 		// TODO(ekhabarov): pass gf instead of goStructFields
-		return processSubMessage(w, fdp, pname, gname, t, mo, goStructFields, customTransformer, forceUsePackage)
+		return processSubMessage(w, fdp, pname, gname, t, mo, goStructFields, customTransformer, forceUsePackage, gStructPkg, protoGoPkg)
 	}
 
 	return processSimpleField(w, pname, gname, fdp.Type, gf, fdp)

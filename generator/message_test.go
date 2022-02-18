@@ -29,7 +29,7 @@ var _ = Describe("Message", func() {
 					Expect(err).NotTo(HaveOccurred())
 				}
 
-				fields, structName, err := processMessage(nil, msg, subm, messagesData, false)
+				fields, structName, err := processMessage(nil, msg, subm, messagesData, false, "model", "pb")
 				if expError == nil {
 					Expect(err).NotTo(HaveOccurred())
 				} else {
