@@ -194,6 +194,7 @@ func processSimpleField(w io.Writer, pname, gname string, ftype *descriptor.Fiel
 		f.GoToProtoType = ""
 
 	case sft != tgo:
+		p(w, "0000: %s %s", sft, tgo)
 		p := t.pbType
 		if *ftype == descriptor.FieldDescriptorProto_TYPE_ENUM {
 			p = fdp.GetTypeName()
