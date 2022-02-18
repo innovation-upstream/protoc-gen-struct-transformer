@@ -81,6 +81,7 @@ func processSubMessage(w io.Writer,
 	customTransformer bool,
 	forceUsePackage bool,
 ) (*Field, error) {
+	p(w, "0000: %s %s %s", pname, gname, pbtype)
 
 	if fdp == nil {
 		return nil, errors.New("input field is nil")
