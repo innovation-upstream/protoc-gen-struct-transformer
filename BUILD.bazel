@@ -3,28 +3,27 @@ load("@bazel_gazelle//:def.bzl", "gazelle")
 
 # gazelle:prefix github.com/innovation-upstream/protoc-gen-struct-transformer
 # gazelle:proto disable
-# gazelle:go_naming_convention go_default_library
 gazelle(
     name = "gazelle",
 )
 
+go_binary(
+    name = "__do_not_match__",
+    embed = [":protoc-gen-struct-transformer_lib"],
+    visibility = ["//visibility:public"],
+)
+
 go_library(
-    name = "go_default_library",
+    name = "protoc-gen-struct-transformer_lib",
     srcs = ["main.go"],
     importpath = "github.com/innovation-upstream/protoc-gen-struct-transformer",
     visibility = ["//visibility:private"],
     deps = [
-        "//generator:go_default_library",
-        "@com_github_gogo_protobuf//protoc-gen-gogo/descriptor:go_default_library",
-        "@com_github_gogo_protobuf//protoc-gen-gogo/plugin:go_default_library",
+        "//generator",
+        "@com_github_gogo_protobuf//protoc-gen-gogo/descriptor",
+        "@com_github_gogo_protobuf//protoc-gen-gogo/plugin",
         "@com_github_golang_protobuf//proto:go_default_library",
-        "@com_github_pkg_errors//:go_default_library",
-        "@org_golang_x_tools//imports:go_default_library",
+        "@com_github_pkg_errors//:errors",
+        "@org_golang_x_tools//imports",
     ],
-)
-
-go_binary(
-    name = "__do_not_match__",
-    embed = [":go_default_library"],
-    visibility = ["//visibility:public"],
 )

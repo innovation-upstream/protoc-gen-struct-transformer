@@ -1,7 +1,7 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
-    name = "go_default_library",
+    name = "source",
     srcs = [
         "doc.go",
         "field.go",
@@ -12,15 +12,15 @@ go_library(
 )
 
 go_test(
-    name = "go_default_test",
+    name = "source_test",
     srcs = [
         "parser_test.go",
         "source_suite_test.go",
     ],
-    embed = [":go_default_library"],
+    embed = [":source"],
     deps = [
-        "@com_github_onsi_ginkgo//:go_default_library",
-        "@com_github_onsi_ginkgo//extensions/table:go_default_library",
-        "@com_github_onsi_gomega//:go_default_library",
+        "@com_github_onsi_ginkgo//:ginkgo",
+        "@com_github_onsi_ginkgo//extensions/table",
+        "@com_github_onsi_gomega//:gomega",
     ],
 )
